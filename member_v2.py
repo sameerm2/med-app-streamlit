@@ -94,93 +94,146 @@ def member_page():
     ### OpenAI API Key
     load_dotenv()
     api = os.getenv("api_key")
-    #print(api)
-    api = st.secrets["openai_api_key"]
-    #os.environ["OPENAI_API_KEY"] = api
+    # print(api) 
+    # api = st.secrets["openai_api_key"] #uncomment for streamlit
+    os.environ["OPENAI_API_KEY"] = api 
 
-    question=""
-    # input question
-    ask_text = st.text_input("Ask a Question")
-    col1, col3,  col2 = st.columns([2, 3, 2])
-    with col1:
-        ask_button = st.button("Ask", use_container_width=1)
-    with col2:
-        # speak_button = st.button("Speak", use_container_width=1)
-        # audio_bytes = audio_recorder(text="", icon_size="2x") -> small button
-        audio_bytes = audio_recorder(text = "Click to record", icon_size="2x", key="audio_button")
+    # question="" 
+    # # input question
+    # ask_text = st.text_input("Ask a Question")
+    # col1, col3,  col2 = st.columns([2, 3, 2])
+    # with col1:
+    #     ask_button = st.button("Ask", use_container_width=1)
+    # with col2:
+    #     # speak_button = st.button("Speak", use_container_width=1)
+    #     # audio_bytes = audio_recorder(text="", icon_size="2x") -> small button
+    #     audio_bytes = audio_recorder(text = "Click to record", icon_size="2x", key="audio_button")
         
-    st.markdown(
-        """
-        <style>
-            .body {
-                <button type="button" class="btn btn-primary">Primary</button>
-            }
-        </style>
-        """,
-            unsafe_allow_html=True,
-    )
+    # st.markdown(
+    #     """
+    #     <style>
+    #         .body {
+    #             <button type="button" class="btn btn-primary">Primary</button>
+    #         }
+    #     </style>
+    #     """,
+    #         unsafe_allow_html=True,
+    # )
     
     # st.write("Click the 'Start' button and speak into your microphone.")
-    if audio_bytes:
-        text=""
-        # question = text
-        # audio_bytes = audio_recorder(text = "Click to record", icon_size="2x", key="audio_button")
-        filename = str(random.randint(1,199))+".wav"
-        with open(filename, mode='bx') as f:
-            f.write(audio_bytes)
-            sound = am.from_file(filename, format='wav', frame_rate=44100)
-            sound = sound.set_frame_rate(16000)
-            sound.export(filename, format='wav')
-            harvard = sr.AudioFile(filename)
-            with harvard as source:
-                audio = r.record(source)
-            try:
-                text = r.recognize_google(audio)
-            except Exception as e:
-                print("error in Stp",e)
-                st.write("Try Again")
+    # if audio_bytes:
+    #     text=""
+    #     # question = text
+    #     # audio_bytes = audio_recorder(text = "Click to record", icon_size="2x", key="audio_button")
+    #     filename = str(random.randint(1,199))+".wav"
+    #     with open(filename, mode='bx') as f: 
+    #         f.write(audio_bytes)
+    #         sound = am.from_file(filename, format='wav', frame_rate=44100)
+    #         sound = sound.set_frame_rate(16000)
+    #         sound.export(filename, format='wav')
+    #         harvard = sr.AudioFile(filename)
+    #         with harvard as source:
+    #             audio = r.record(source)
+    #         try:
+    #             text = r.recognize_google(audio)
+    #         except Exception as e:
+    #             print("error in Stp",e)
+    #             st.write("Try Again")
         
-        os.remove(filename)
-        # question_speech = speechTotext()  #edited by sudip
-        question = text
+    #     os.remove(filename)
+    #     # question_speech = speechTotext()  #edited by sudip
+    #     question = text
         
-    if ask_button:
-        question = ask_text
+    # if ask_button:
+    #     question = ask_text
     
-    # output
-    if question!="":
-        st.write("You Asked:", question)
-        st.write("please wait...")
-        if pdfs_folder:
-            # file_path = os.path.join(file_directory, selected_file)
-            # pdf_text = extract_text(file_path)
-            pdf_text = extract_text_multiple(pdfs_folder)
-            ### GenerativeAI
+    # # output
+    # if question!="":
+    #     st.write("You Asked:", question)
+    #     st.write("please wait...")
+    #     if pdfs_folder:
+    #         # file_path = os.path.join(file_directory, selected_file)
+    #         # pdf_text = extract_text(file_path)
+    #         pdf_text = extract_text_multiple(pdfs_folder)
+    #         ### GenerativeAI
              
-    # Perform your time-consuming task or computation here
+    # # Perform your time-consuming task or computation here
     
-            chunk_lst = get_chunk_lst(pdf_text)
-            embeddings = get_embeddings()
-            doc_search = FAISS.from_texts(chunk_lst, embeddings)
-            chain = get_qa_chain()
-            query = question
-            docs = doc_search.similarity_search(query)
-                #op = chain.run(input_documents=docs, question=query)
-            try:
-                op = chain.run(input_documents=docs, question=query)
-                if (op==" I don't know." or op==" I'm sorry, I don't understand the question." or op=="I don't know." or op==" Sorry,i don't know"):
-                    st.write("Apologies! The information you have requested is not available at this point")
-                else:
-                    st.write(op)
-            except Exception as e:
-                print("error : ",e)
-                st.write("Apologies! The information you have requested is not available at this point")
-        else:
-            st.warning("Please select a PDF.")
-        audio_bytes = False
-        ask_button = False
-        question=""
-        doc_search,chunk_lst="",""
+    #         chunk_lst = get_chunk_lst(pdf_text)
+    #         embeddings = get_embeddings()
+    #         doc_search = FAISS.from_texts(chunk_lst, embeddings)
+    #         chain = get_qa_chain()
+    #         query = question
+    #         docs = doc_search.similarity_search(query)
+    #             #op = chain.run(input_documents=docs, question=query)
+    #         try:
+    #             op = chain.run(input_documents=docs, question=query)
+    #             if (op==" I don't know." or op==" I'm sorry, I don't understand the question." or op=="I don't know." or op==" Sorry,i don't know"):
+    #                 st.write("Apologies! The information you have requested is not available at this point")
+    #             else:
+    #                 st.write(op)
+    #         except Exception as e:
+    #             print("error : ",e)
+    #             st.write("Apologies! The information you have requested is not available at this point")
+    #     else:
+    #         st.warning("Please select a PDF.")
+    #     audio_bytes = False
+    #     ask_button = False
+    #     question=""
+    #     doc_search,chunk_lst="",""
+ 
+      ## chat code  
+    # Initialize chat history  
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    # Display chat messages from history on app rerun
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    # React to user input
+    if prompt := st.chat_input("Any question ?"): 
+        # Display user message in chat message container
+        st.chat_message("user").markdown(prompt)
+        # Add user message to chat history
+        st.session_state.messages.append({"role": "user", "content": prompt})
+
+        if prompt!=None:
+            # for response 
+            if pdfs_folder:
+                # file_path = os.path.join(file_directory, selected_file)
+                # pdf_text = extract_text(file_path)
+                pdf_text = extract_text_multiple(pdfs_folder) 
+                ### GenerativeAI
+                # Perform your time-consuming task or computation here
+        
+                chunk_lst = get_chunk_lst(pdf_text)
+                embeddings = get_embeddings()
+                doc_search = FAISS.from_texts(chunk_lst, embeddings)
+                chain = get_qa_chain()
+                query = prompt
+                docs = doc_search.similarity_search(query)
+                    #op = chain.run(input_documents=docs, question=query)
+                try:
+                    op = chain.run(input_documents=docs, question=query)
+                    if (op==" I don't know." or op==" I'm sorry, I don't understand the question." or op=="I don't know." or op==" Sorry,i don't know"):
+                        bot_response="Apologies! The information you have requested is not available at this point"
+                    else:
+                        bot_response=op
+                except Exception as e:
+                    print("error : ",e)
+                    bot_response="Apologies! The information you have requested is not available at this point"
+            else:
+                st.warning("Please select a PDF.") 
+
+            response = f"Bot: {bot_response}"
+            # Display assistant response in chat message container
+            with st.chat_message("assistant"):
+                st.markdown(response) 
+            # Add assistant response to chat history
+            st.session_state.messages.append({"role": "assistant", "content": response})    
+            
 
 
 
