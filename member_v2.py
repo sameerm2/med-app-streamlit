@@ -15,7 +15,8 @@ import speech_recognition as sr
 import tempfile
 from st_custom_components import st_audiorec
 from audio_recorder_streamlit import audio_recorder
-from pydub import AudioSegment as am
+from pydub import AudioSegment as am 
+from googletrans import Translator
 
 r = sr.Recognizer()
 
@@ -92,11 +93,11 @@ def member_page():
     #                              pdf_files)
     pdfs_folder = st.file_uploader("Upload PDF files", type="pdf", accept_multiple_files=True)
     ### OpenAI API Key
-    load_dotenv()
-    api = os.getenv("api_key")
+    # load_dotenv()
+    # api = os.getenv("api_key")
     #print(api)
     api = st.secrets["openai_api_key"]
-    #os.environ["OPENAI_API_KEY"] = api
+    os.environ["OPENAI_API_KEY"] = api 
 
     question=""
     # input question
@@ -133,12 +134,21 @@ def member_page():
             sound.export(filename, format='wav')
             harvard = sr.AudioFile(filename)
             with harvard as source:
-                audio = r.record(source)
+                audio = r.record(source) 
             try:
-                text = r.recognize_google(audio)
-            except Exception as e:
+                text = r.recognize_google(audio,language='te-IN')
+
+                # from_lang='te'
+                # to_lang='en' 
+                # translator = Translator()
+                # det = translator.detect(text) 
+                # print(det)
+                # out = translator.translate(text,des='en')
+                # print(out) 
+               
+            except Exception as e: 
                 print("error in Stp",e)
-                st.write("Try Again")
+                st.write("Try Again") 
         
         os.remove(filename)
         # question_speech = speechTotext()  #edited by sudip
