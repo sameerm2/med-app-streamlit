@@ -159,7 +159,7 @@ def member_page():
     
     # output
     if question!="":
-        st.write("You Asked:", question)
+        st.write("నువ్వు అడిగావు:", question)
         st.write("please wait...")
         if pdfs_folder:
             # file_path = os.path.join(file_directory, selected_file)
