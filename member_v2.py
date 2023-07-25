@@ -17,6 +17,9 @@ from st_custom_components import st_audiorec
 from audio_recorder_streamlit import audio_recorder
 from pydub import AudioSegment as am 
 from googletrans import Translator
+from langchain.llms import OpenAI
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
 
 r = sr.Recognizer()
 
@@ -83,7 +86,19 @@ def get_chunk_lst(pdf_text):
             )
     chunk_lst = splitter.split_text(pdf_text)
     return chunk_lst
-
+def convert_to_regional(input_text,language):
+    llm = OpenAI(temperature=0)
+    prompt = PromptTemplate(
+        input_variables=["text", "language"],
+        template="Translate the {text} in {language}",
+    )
+    chain = LLMChain(llm=llm, prompt=prompt)
+    result = chain.run({
+        'text': input_text,
+        'language': language
+        })
+    print(result)
+    return result
 def member_page():
     #st.title("GenAI-Assisted Medical Records Extraction")
     st.markdown("<h1 style='text-align: center; color: black;'>Generative-AI Assisted Medical Records Extraction</h1>", unsafe_allow_html=True)
@@ -182,6 +197,8 @@ def member_page():
                     st.write("Apologies! The information you have requested is not available at this point")
                 else:
                     st.write(op)
+                    regional_text = convert_to_regional(input_text=op,language='telugu')
+                    st.write(regional_text)
             except Exception as e:
                 print("error : ",e)
                 st.write("Apologies! The information you have requested is not available at this point")
