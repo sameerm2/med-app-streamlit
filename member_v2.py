@@ -137,15 +137,7 @@ def member_page():
         """,
             unsafe_allow_html=True,
     )
-      ## chat code  
-    # Initialize chat history  
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-    with st.container():
-         # Display chat messages from history on app rerun
-        for message in st.session_state.messages:
-            with st.chat_message(message["role"]):
-                st.markdown(message["content"])
+    
     # st.write("Click the 'Start' button and speak into your microphone.")
     if audio_bytes:
         text=""
@@ -184,8 +176,8 @@ def member_page():
     
     # output
     if question!="":
-        # st.write("You Asked:", question)
-        # st.write("please wait...")
+        st.write("You Asked:", question)
+        st.write("please wait...")
         if pdfs_folder:
             # file_path = os.path.join(file_directory, selected_file)
             # pdf_text = extract_text(file_path)
@@ -206,19 +198,9 @@ def member_page():
                 if (op==" I don't know." or op==" I'm sorry, I don't understand the question." or op=="I don't know." or op==" Sorry,i don't know"):
                     st.write("Apologies! The information you have requested is not available at this point")
                 else:
-                    # st.write(op)
+                    st.write(op)
                     regional_text = convert_to_regional(input_text=op,language='telugu')
-                    # st.write(regional_text)
-                     # Display user message in chat message container
-                    user_response = f"User: {question}"
-                    # with st.chat_message("user"): 
-                    st.chat_message("user").markdown(user_response)
-                    st.session_state.messages.append({"role": "user", "content": user_response})
-                    response = f"Bot: {regional_text}"
-                    with st.chat_message("assistant"):
-                        st.markdown(response)  
-                        # Add assistant response to chat history
-                        st.session_state.messages.append({"role": "assistant", "content": response})    
+                    st.write(regional_text)
             except Exception as e:
                 print("error : ",e)
                 st.write("Apologies! The information you have requested is not available at this point")
